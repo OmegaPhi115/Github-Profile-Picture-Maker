@@ -1,5 +1,6 @@
 # You can change those values
-size = 5 #number of "pixel" per rows and colums
+size_x = 5 #number of "pixel" per rows and colums, 5 is default
+size_y = 5 #number of "pixel" per colums, 5 is default
 taille_px = 420 #size of the picture
 color_primary = (255, 20, 116) #color of the pixels
 color_secondary = (240, 240, 240) #color of the backgroun
@@ -11,18 +12,34 @@ import random
 import pygame
 import pygame.mixer
 from pygame.locals import *
+
 pygame.init()
+Image_size_tuple = (taille_px, taille_px)
 
-#entrées
-taille_px_tuple = (taille_px, taille_px)
 
-def Create_image(size):
-    image_text = []
-    for ia in range(size):
-        image_text_compo = []
-        for ib in range(size):
-            image_text_compo.append(random.choice(["X", " "]))
-        image_text.append(image_text_compo)
+def Create_Image_Structure(sizex, sizey):
+    """
+    Image structure:
+    X: Draw pixel
+    O: Don't draw pixel
+    E: End of line
+
+    Other characters will be discarded
+    """
+
+    image_text = ""
+    for Dontcare in range(size):
+
+        # Making a row
+        image_text_row = ""
+        for atall in range(size):
+            image_text_row += random.choice(["X", "O"])
+
+        # Putting "end of line" character
+        image_text_row += "E"
+
+        # Adding it in the main thing
+        image_text += image_text_row
     return image_text
 
 class image:
@@ -72,7 +89,7 @@ class image:
         self.make_image(self.last_list)
 
 
-image_txt = Create_image(size)
+image_txt = Create_Image_Structure(size_x, size_y)
 surface = pygame.display.set_mode(taille_px_tuple)
 image_maker = image(surface, taille_px, size, color_primary, color_secondary)
 image_maker.make_image(image_txt)
@@ -84,11 +101,11 @@ while Launched:
             Launched = False
 
     if event.type == MOUSEBUTTONDOWN and event.button == 1:
-        image_txt = Create_image(size)
+        image_txt = Create_Image_Structure(size)
         image_maker.make_image(image_txt)
 
     if event.type == MOUSEBUTTONDOWN and event.button == 2:
-        image_txt = Create_image(size)
+        image_txt = Create_Image_Structure(size)
         image_maker.last_list = image_txt
         color_primary = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
         image_maker.color_primary = color_primary
