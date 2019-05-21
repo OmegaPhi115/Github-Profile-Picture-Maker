@@ -1,20 +1,59 @@
 # You can change those values
-size_x = 5 #number of "pixel" per rows and colums, 5 is default
-size_y = 5 #number of "pixel" per colums, 5 is default
-taille_px = 420 #size of the picture
-color_primary = (255, 20, 116) #color of the pixels
-color_secondary = (240, 240, 240) #color of the backgroun
+size_x = 5 # number of squares per rows , 5 is default, put "auto" for automatic
+size_y = 5 # number of squares per colums, 5 is default, put "auto" for automatic
 
+picture_size_px_x = 420 # size of the picture in x, 420 is default
+picture_size_px_y = 420 # size of the picture in y, 420 is default
+
+border_width = 42
+
+color_primary = (255, 20, 116) # color of the pixels
+color_secondary = (240, 240, 240) # color of the background
 
 # Don't change anything from there ! Unless you're working on the code
 
+
+# first, sanitize inputs:
+
+# Full auto mode don't exist
+if size_x == "auto" and size_y == "auto":
+    raise Exception("You can't have auto on both sizes !")
+
+#border to large
+if border_width*2 >= picture_size_px_x:
+    raise Exception("The picture size is too short in the x dimention, try increasing it or reducing the border's width")
+elif border_width*2 >= picture_size_px_x:
+    raise Exception("The picture size is too short in the y dimention, try increasing it or reducing the border's width")
+
+# then calculate values
+def parameter_checker():
+    # first, calculate the side lenght of each squares
+    #
+    # when calculating the side lenght, it the border must be >= border_width
+    global square_side_lenght
+
+    if size_y == "auto":
+        pixel_space = picture_size_px_x - (border_width * 2)  # calculate area of possible square
+
+        square_side_lenght = int(pixel_space / size_x)  # calculate max possible side lenght in the area
+
+        if square_side_lenght < 1:  # if the lenght is under a pixel large (cannot be displayed) then abord
+            raise Exception("The picture size is too short in the x dimention, try increasing it or reducing the "
+                            "number of squares to create")
+
+        # now increase the border width with leftover space, the left one is prioritised if odd number
+        
+
+parameter_checker()
+
+# import stuffs
 import random
 import pygame
 import pygame.mixer
 from pygame.locals import *
 
 pygame.init()
-Image_size_tuple = (taille_px, taille_px)
+Image_size_tuple = (picture_size_px_x, picture_size_px_y)
 
 
 def Create_Image_Structure(sizex, sizey):
@@ -28,11 +67,11 @@ def Create_Image_Structure(sizex, sizey):
     """
 
     image_text = ""
-    for Dontcare in range(size):
+    for Dontcare in range(sizey):
 
         # Making a row
         image_text_row = ""
-        for atall in range(size):
+        for atall in range(sizex):
             image_text_row += random.choice(["X", "O"])
 
         # Putting "end of line" character
@@ -42,7 +81,7 @@ def Create_Image_Structure(sizex, sizey):
         image_text += image_text_row
     return image_text
 
-class image:
+class image: # this class will be deleted, coding at 3am don't help to write good code
     def __init__(self, surface, screen_size, row_size, color_primary, color_secondary):
         self.surface = surface
         self.screen_size = screen_size
@@ -89,32 +128,35 @@ class image:
         self.make_image(self.last_list)
 
 
+# Starting display
 image_txt = Create_Image_Structure(size_x, size_y)
-surface = pygame.display.set_mode(taille_px_tuple)
-image_maker = image(surface, taille_px, size, color_primary, color_secondary)
-image_maker.make_image(image_txt)
+surface = pygame.display.set_mode(Image_size_tuple)
+
+#oijriuhiuhihiuhiuhiuhih
+#image_maker = image(surface, picture_size_px, size_x, color_primary, color_secondary)
+#image_maker.make_image(image_txt)
+#oijikihkqhspuhfyhuiuhoihwoehf
+
+#mainloop
 Launched = True
+
 while Launched:
-    pygame.time.Clock().tick(30)
+    pygame.time.Clock().tick(10)# reduce to 10fps
+
+    # event handling
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             Launched = False
 
     if event.type == MOUSEBUTTONDOWN and event.button == 1:
-        image_txt = Create_Image_Structure(size)
-        image_maker.make_image(image_txt)
+        image_txt = Create_Image_Structure(size_x, size_y)
 
     if event.type == MOUSEBUTTONDOWN and event.button == 2:
-        image_txt = Create_Image_Structure(size)
-        image_maker.last_list = image_txt
+        image_txt = Create_Image_Structure(size_x, size_y)
         color_primary = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
-        image_maker.color_primary = color_primary
-        image_maker.actu()
 
     if event.type == MOUSEBUTTONDOWN and event.button == 3:
         color_primary = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
-        image_maker.color_primary = color_primary
-        image_maker.actu()
 
     if event.type == KEYDOWN:
         pressed = pygame.key.get_pressed()
@@ -124,6 +166,9 @@ while Launched:
 
         #print(pygame.key.get_pressed())
         if event.key == K_s and ctrl_held:
-            pygame.image.save(surface, "output.png")
+            pygame.image.save(surface, "output.png") # todo multiple saves
+
+    # now display the image
+
 
     pygame.display.flip()
