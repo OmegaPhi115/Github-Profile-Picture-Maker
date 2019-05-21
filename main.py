@@ -1,3 +1,12 @@
+# You can change those values
+size = 5 #number of "pixel" per rows and colums
+taille_px = 420 #size of the picture
+color_primary = (255, 20, 116) #color of the pixels
+color_secondary = (240, 240, 240) #color of the backgroun
+
+
+# Don't change anything from there ! Unless you're working on the code
+
 import random
 import pygame
 import pygame.mixer
@@ -5,11 +14,6 @@ from pygame.locals import *
 pygame.init()
 
 #entrées
-size = 6 - 1 # -1, array start at 0
-taille_px = 420
-color_primary = (255, 20, 116)
-color_secondary = (240, 240, 240)
-
 taille_px_tuple = (taille_px, taille_px)
 
 def Create_image(size):
